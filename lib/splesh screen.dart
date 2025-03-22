@@ -23,7 +23,7 @@ class _SpleshScreenState extends State<SpleshScreen> with SingleTickerProviderSt
       vsync: this,
     )..repeat();
 
-    Timer(const Duration(seconds: 4), () {
+    Timer(const Duration(seconds: 5), () {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => home()),
