@@ -40,6 +40,9 @@ dependencies:
   flutter_spinkit:
   math_expressions:
   shimmer:
+  get:
+  fl_chart:
+
 
 dev_dependencies:
   flutter_test:

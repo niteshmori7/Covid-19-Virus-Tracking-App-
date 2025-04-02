@@ -1,8 +1,7 @@
 import 'dart:async';
-import 'dart:math' as math; // Import math for pi
-
-import 'package:corona/home.dart';
+import 'dart:math' as math; // Import math for rotation
 import 'package:flutter/material.dart';
+import 'package:corona/home.dart';
 
 class SpleshScreen extends StatefulWidget {
   const SpleshScreen({super.key});
@@ -13,6 +12,7 @@ class SpleshScreen extends StatefulWidget {
 
 class _SpleshScreenState extends State<SpleshScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
 
   @override
   void initState() {
@@ -23,10 +23,14 @@ class _SpleshScreenState extends State<SpleshScreen> with SingleTickerProviderSt
       vsync: this,
     )..repeat();
 
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
     Timer(const Duration(seconds: 5), () {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => home()),
+        MaterialPageRoute(builder: (context) => const Home()),
       );
     });
   }
@@ -40,24 +44,52 @@ class _SpleshScreenState extends State<SpleshScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (BuildContext context, Widget? child) {
-              return Transform.rotate(
-                angle: _controller.value * math.pi * 2,
-                child: Image.asset('assets/corona.png'),
-              );
-            },
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1E3C72), Color(0xFF2A5298)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          SizedBox(height:  MediaQuery.of(context).size.height * .04),
-          Align(
-            alignment: Alignment.center,
-            child: Text('Covid-19 \n Tracking App',textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-          )
-        ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (BuildContext context, Widget? child) {
+                return Transform.rotate(
+                  angle: _controller.value * math.pi * 2,
+                  child: Image.asset('assets/corona.png', width: 150),
+                );
+              },
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+
+            // Fade-in text animation
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: const Text(
+                'Covid-19\nTracking App',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Progress indicator
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }
